@@ -252,9 +252,13 @@ jobs:
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
         
-        # FIX LỖI yylloc - ÉP COMPILER CHẤP NHẬN ĐỊNH NGHĨA TRÙNG
+        # FIX 1: LOI yylloc - ÉP COMPILER CHẤP NHẬN ĐỊNH NGHĨA TRÙNG
         export HOSTCFLAGS="-fcommon"
         export HOSTCXXFLAGS="-fcommon"
+
+        # FIX 2: LOI NR_CPUS - Xóa dòng check lỗi trong mã nguồn & Ép về 8 nhân
+        sed -i '/Unsupported NR_CPUS for lb tracepoint/d' include/trace/events/sched.h
+        echo "CONFIG_NR_CPUS=8" >> arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}
 
         if [ ! -z ${{ env.KSU_EXPECTED_SIZE }} ] && [ ! -z ${{ env.KSU_EXPECTED_HASH }} ]; then
           export KSU_EXPECTED_SIZE=${{ env.KSU_EXPECTED_SIZE }}
